@@ -30,11 +30,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
                     // Allow common local dev hosts and ports
-                    corsConfig.setAllowedOriginPatterns(java.util.Arrays.asList(
-                            "http://localhost:*",
-                            "http://127.0.0.1:*",
-                            "http://192.168.1.106:*"
-                    ));
+                  corsConfig.setAllowedOriginPatterns(java.util.Arrays.asList(
+        "http://localhost:*",
+        "http://127.0.0.1:*",
+        "https://jaas-prime-health-care-frontend-ln45lfe69-jothika-11.vercel.app"
+));
                     corsConfig.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     corsConfig.setAllowedHeaders(java.util.Arrays.asList("*"));
                     corsConfig.setExposedHeaders(java.util.Arrays.asList("Authorization", "Content-Type"));
@@ -69,11 +69,11 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOriginPatterns(
-                                "http://localhost:*",
-                                "http://127.0.0.1:*",
-                                "http://192.168.1.106:*"
-                        )
+                  .allowedOriginPatterns(
+               "http://localhost:*",
+                            "http://127.0.0.1:*",
+                            "https://jaas-prime-health-care-frontend-ln45lfe69-jothika-11.vercel.app"
+)
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization", "Content-Type")
