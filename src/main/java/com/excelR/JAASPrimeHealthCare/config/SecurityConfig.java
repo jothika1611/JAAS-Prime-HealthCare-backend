@@ -29,31 +29,39 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .cors(cors -> cors.configurationSource(request -> {
                     var corsConfig = new org.springframework.web.cors.CorsConfiguration();
-                    // Allow common local dev hosts and ports
-                  corsConfig.setAllowedOriginPatterns(java.util.Arrays.asList(
-        "http://localhost:*",
-        "http://127.0.0.1:*",
-        "https://jaas-prime-health-care-frontend-ln45lfe69-jothika-11.vercel.app"
-));
-                    corsConfig.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+                    corsConfig.setAllowedOriginPatterns(java.util.Arrays.asList("*"));
+                    corsConfig.setAllowedMethods(java.util.Arrays.asList(
+                            "GET", "POST", "PUT", "DELETE", "OPTIONS"
+                    ));
                     corsConfig.setAllowedHeaders(java.util.Arrays.asList("*"));
-                    corsConfig.setExposedHeaders(java.util.Arrays.asList("Authorization", "Content-Type"));
-                    corsConfig.setAllowCredentials(true);
+                    corsConfig.setExposedHeaders(java.util.Arrays.asList(
+                            "Authorization", "Content-Type"
+                    ));
+
+                    // For testing
+                    corsConfig.setAllowCredentials(false);
+
                     return corsConfig;
                 }))
                 .authorizeHttpRequests(auth -> auth
+
+                        // Allow all preflight requests
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+
                         // Public endpoints
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/patients/register").permitAll()
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/doctors/**").permitAll()
-                        // Allow SSE endpoint with manual token validation
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/admin/events").permitAll()
-                        // Role-restricted endpoints
+
+                        // Protected endpoints
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/doctors/**").hasAnyRole("ADMIN", "DOCTOR")
                         .requestMatchers("/api/appointments/book").hasRole("PATIENT")
                         .requestMatchers("/api/appointments/**").hasAnyRole("ADMIN", "DOCTOR", "PATIENT")
                         .requestMatchers("/api/patients/**").hasAnyRole("ADMIN", "PATIENT")
+
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -68,16 +76,13 @@ public class SecurityConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
+
                 registry.addMapping("/**")
-                  .allowedOriginPatterns(
-               "http://localhost:*",
-                            "http://127.0.0.1:*",
-                            "https://jaas-prime-health-care-frontend-ln45lfe69-jothika-11.vercel.app"
-)
+                        .allowedOriginPatterns("*")
                         .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                         .allowedHeaders("*")
                         .exposedHeaders("Authorization", "Content-Type")
-                        .allowCredentials(true);
+                        .allowCredentials(false);
             }
         };
     }
